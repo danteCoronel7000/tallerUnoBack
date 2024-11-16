@@ -10,7 +10,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Embeddable
 public class DetPrestamoPK implements Serializable {
-    protected Long id_ejemplar;
-    protected Long id_mprestamo;
-    protected String docum;//nombre que se le dara al documento
+    private Long id_ejemplar;
+    private Long id_mprestamo;
+    private Long estado;
 }
