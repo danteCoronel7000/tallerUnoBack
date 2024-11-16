@@ -29,4 +29,18 @@ public class Ejemplares {
     Long disponible;
     @Column(name = "estado")
     Long estado;
+
+    @ManyToOne
+    @JoinColumn(name = "id_texto", referencedColumnName = "id_texto")
+    private Textos texto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario_anula", referencedColumnName = "id_usuario")
+    private Usuarios anula;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario_resgistra", referencedColumnName = "id_usuario")
+    private Usuarios registra;
+
+
 }
