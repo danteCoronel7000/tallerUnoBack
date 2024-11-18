@@ -8,8 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class EjemplaresDto {
     private Long id_ejemplar;
-
+    private Long codinv;
     private Long disponible;
-
     private Long estado;
 }

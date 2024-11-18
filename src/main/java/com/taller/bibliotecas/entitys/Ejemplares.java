@@ -25,6 +25,8 @@ public class Ejemplares {
     )
     @Column(name = "id_ejemplar")
     Long id_ejemplar;
+    @Column(name = "codinv")
+    Long codinv;
     @Column(nullable = false)
     Long disponible;
     @Column(name = "estado")

@@ -12,4 +12,7 @@ public interface EjemplaresRepository extends JpaRepository<Ejemplares,Long> {
 
     @Query(value = "SELECT * FROM ejemplares WHERE id_texto = :idTexto", nativeQuery = true)
     List<Ejemplares> findEjemplaresByTextoId(@Param("idTexto") Long idTexto);
+
+    @Query(value = "SELECT COALESCE(MAX(id_ejemplar), 0) + 1 FROM ejemplares", nativeQuery = true)
+    Long obtenerSiguienteId();
 }
