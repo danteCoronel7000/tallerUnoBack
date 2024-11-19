@@ -1,10 +1,8 @@
 package com.taller.bibliotecas.entitys;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -35,11 +33,15 @@ public class Personas {
     Long estado;
     String tipo_per;
     String foto;
-    @OneToOne
+    @OneToOne(
+            cascade = CascadeType.PERSIST,
+            fetch = FetchType.EAGER
+    )
     @JoinColumn(
             name = "id_dato",
             referencedColumnName = "id_dato"
     )
+    @JsonBackReference
     Datos datos;
 
     @OneToMany(

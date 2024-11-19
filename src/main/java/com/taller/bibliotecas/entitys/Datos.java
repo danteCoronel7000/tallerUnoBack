@@ -1,10 +1,8 @@
 package com.taller.bibliotecas.entitys;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -28,4 +26,11 @@ public class Datos {
     private Long id_dato;
     @Column(name = "ci")
     private String ci;
+
+    @OneToOne(
+            mappedBy = "datos",
+            fetch = FetchType.EAGER
+    )
+    @JsonManagedReference
+    Personas persona;
 }
