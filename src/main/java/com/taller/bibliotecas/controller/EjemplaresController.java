@@ -1,12 +1,7 @@
 package com.taller.bibliotecas.controller;
 
-import com.taller.bibliotecas.entitys.Autores;
-import com.taller.bibliotecas.entitys.Ejemplares;
-import com.taller.bibliotecas.entitys.Menus;
-import com.taller.bibliotecas.entitys.Textos;
-import com.taller.bibliotecas.projections.classBased.CrearEjemplarDTO;
-import com.taller.bibliotecas.projections.classBased.EjemplaresDto;
-import com.taller.bibliotecas.projections.classBased.ModificarIdEjemplarDTO;
+import com.taller.bibliotecas.entitys.*;
+import com.taller.bibliotecas.projections.classBased.*;
 import com.taller.bibliotecas.repository.EjemplaresRepository;
 import com.taller.bibliotecas.repository.TextosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +91,32 @@ public class EjemplaresController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null); // O bien puedes devolver un mensaje de error
         }
+    }
+
+    @GetMapping(value = "allDto")
+    public List<EjemplarDtoPPrestamos> allDetPrestamoDTo() {
+        // Obtenemos los datos de la entidad dPrestamo (suponiendo que usas un repositorio)
+        List<Ejemplares> ejemplares = ejemplaresRepository.findAll();
+
+        // Mapeamos los datos de la entidad al DTO
+        return ejemplares.stream()
+                .map(ejemplar -> {
+                    EjemplarDtoPPrestamos dto = new EjemplarDtoPPrestamos();
+                    dto.setId_ejemplar(ejemplar.getId_ejemplar());
+                    dto.setCodinv(ejemplar.getCodinv());
+                    // Verificamos si el objeto Texto no es nulo antes de acceder a sus métodos
+                    if (ejemplar.getTexto() != null) {
+                        dto.setTitulo(ejemplar.getTexto().getTitulo());
+                    } else {
+                        // Manejo de caso en el que el Texto sea nulo, por ejemplo, asignar un valor por defecto
+                        dto.setTitulo("texto sin titulo");
+                    }
+
+                    dto.setDisponible(ejemplar.getDisponible());
+                    dto.setEstado((ejemplar.getEstado()));
+                    return dto;
+                })
+                .toList();
     }
 
 
