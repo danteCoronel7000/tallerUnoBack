@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taller.bibliotecas.entitys.*;
+import com.taller.bibliotecas.projections.classBased.MenusAsigNoAsig;
+import com.taller.bibliotecas.projections.classBased.ProcesosAsigNoAsig;
+import com.taller.bibliotecas.projections.interfaceBased.closed.RolesClosedView;
 import com.taller.bibliotecas.repository.AutoresRepository;
 import com.taller.bibliotecas.repository.MenusRepository;
 import com.taller.bibliotecas.repository.ProcesosRepository;
@@ -142,5 +145,15 @@ public class MenusController {
         return ResponseEntity.ok(updatedMenu);
     }
 
+    // dto based in class view based
+    @GetMapping(value = "alldto")
+    public List<MenusAsigNoAsig> findAllDTO() {
+        return menusService.findAllAsigNoAsig();
+    }
+
+    @GetMapping(value = "alldtoPro")
+    public List<ProcesosAsigNoAsig> findAllDTOpro() {
+        return menusService.findAllProcesosAsigNoAsig();
+    }
 
 }

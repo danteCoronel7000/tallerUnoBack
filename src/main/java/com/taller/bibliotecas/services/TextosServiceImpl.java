@@ -27,7 +27,6 @@ public class TextosServiceImpl implements TextosService {
     public Textos deleteTextos(Long id_texto) {
         Textos texto = textosRepository.findById(id_texto)
                 .orElseThrow(() -> new RuntimeException("Texto no encontrado con id: " + id_texto));
-
         // Actualizar el estado del texto
         texto.setEstado(0L);
 

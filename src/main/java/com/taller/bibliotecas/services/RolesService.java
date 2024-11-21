@@ -1,6 +1,7 @@
 package com.taller.bibliotecas.services;
 
 import com.taller.bibliotecas.entitys.Roles;
+import com.taller.bibliotecas.projections.classBased.RolesAsigNoAsig;
 import com.taller.bibliotecas.projections.classBased.RolesDTO;
 import com.taller.bibliotecas.projections.interfaceBased.closed.RolesClosedView;
 
@@ -17,5 +18,8 @@ public interface RolesService {
     Roles habilitarRol(Long id_rol);
 
     List<RolesClosedView> findRolesDto();
+
+    List<RolesAsigNoAsig> findRolesAsig();
+
 
 }

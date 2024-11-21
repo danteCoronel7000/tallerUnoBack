@@ -1,7 +1,10 @@
 package com.taller.bibliotecas.services;
 
 import com.taller.bibliotecas.entitys.Menus;
+import com.taller.bibliotecas.projections.classBased.MenusAsigNoAsig;
+import com.taller.bibliotecas.projections.classBased.ProcesosAsigNoAsig;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MenuService {
@@ -13,4 +16,7 @@ public interface MenuService {
 
     Menus habilitarMenu(Long id_menu);
 
+    List<MenusAsigNoAsig> findAllAsigNoAsig();
+
+    List<ProcesosAsigNoAsig> findAllProcesosAsigNoAsig();
 }

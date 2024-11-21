@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taller.bibliotecas.entitys.Autores;
 import com.taller.bibliotecas.entitys.Menus;
 import com.taller.bibliotecas.entitys.Roles;
+import com.taller.bibliotecas.entitys.Usuarios;
+import com.taller.bibliotecas.projections.classBased.RolesAsigNoAsig;
 import com.taller.bibliotecas.projections.classBased.RolesDTO;
 import com.taller.bibliotecas.projections.interfaceBased.closed.RolesClosedView;
 import com.taller.bibliotecas.repository.AutoresRepository;
 import com.taller.bibliotecas.repository.MenusRepository;
 import com.taller.bibliotecas.repository.RolesRepository;
+import com.taller.bibliotecas.repository.UsuariosRepository;
 import com.taller.bibliotecas.services.AutoresService;
 import com.taller.bibliotecas.services.RolesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,8 @@ public class RolesController {
     RolesService rolesService;
     @Autowired
     MenusRepository menusRepository;
+    @Autowired
+    UsuariosRepository usuariosRepository;
 
 
     @GetMapping(value = "all")
@@ -44,6 +49,12 @@ public class RolesController {
     @GetMapping(value = "alldto")
     public List<RolesClosedView> findAllDTO() {
         return rolesService.findRolesDto();
+    }
+
+    // dto based in class view based
+    @GetMapping(value = "allAsig")
+    public List<RolesAsigNoAsig> finAllAsig() {
+        return rolesService.findRolesAsig();
     }
 
 
