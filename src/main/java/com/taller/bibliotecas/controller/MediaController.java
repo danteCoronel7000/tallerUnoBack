@@ -324,10 +324,20 @@ public class MediaController {
 
 
 
-    @PutMapping("update")
-    public Map<String, String> updateFile(@RequestParam("file") MultipartFile multipartFile, @RequestParam("id_persona") Long idPersona) {
+    @PutMapping("/updatefoto")
+    public ResponseEntity<Map<String, String>> updateFile(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("id_persona") Long idPersona) {
+
         // Guardar el archivo y obtener el path
-        String path = storageService.store(multipartFile);
+        String path;
+        try {
+            path = storageService.store(multipartFile);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar el archivo", e);
+        }
+
+        // Construir la URL completa del archivo
         String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
         String url = ServletUriComponentsBuilder
                 .fromHttpUrl(host)
@@ -335,22 +345,19 @@ public class MediaController {
                 .path(path)
                 .toUriString();
 
-        // Buscar la persona en la base de Datos por ID
+        // Buscar la persona en la base de datos por ID
         Optional<Personas> optionalPersona = personasService.findById_persona(idPersona);
-        if (optionalPersona.isPresent()) {
-            // Obtener la persona y actualizar el campo 'foto' con la URL
-            Personas persona = optionalPersona.get();
-            persona.setFoto(url);
-
-            // Guardar la persona actualizada en la base de Datos
-            personasService.save(persona);
-        } else {
-            // Lanza una excepción si la persona no es encontrada
+        if (optionalPersona.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Persona no encontrada");
         }
 
-        // Devolver la URL de la imagen en la respuesta
-        return Map.of("url", url);
+        // Actualizar el campo 'foto' de la persona y guardar los cambios
+        Personas persona = optionalPersona.get();
+        persona.setFoto(url);
+        personasService.save(persona);
+
+        // Responder con la URL de la nueva foto
+        return ResponseEntity.ok(Map.of("url", url));
     }
 
     @PostMapping("upload")
