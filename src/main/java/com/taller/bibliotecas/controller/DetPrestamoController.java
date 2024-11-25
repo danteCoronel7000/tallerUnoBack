@@ -1,19 +1,21 @@
 package com.taller.bibliotecas.controller;
 
-import com.taller.bibliotecas.entitys.DetPrestamo;
-import com.taller.bibliotecas.entitys.DetPrestamoPK;
-import com.taller.bibliotecas.entitys.Ejemplares;
+import com.taller.bibliotecas.entitys.*;
 import com.taller.bibliotecas.projections.classBased.DetPrestamoDTO;
+import com.taller.bibliotecas.projections.classBased.EjemplarPrestamoById_prestamoDTO;
 import com.taller.bibliotecas.projections.classBased.EjemplaresDto;
 import com.taller.bibliotecas.repository.DetPrestamoRepository;
+import com.taller.bibliotecas.repository.MDevolucionRepository;
+import com.taller.bibliotecas.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -22,6 +24,10 @@ import java.util.stream.Collectors;
 public class DetPrestamoController {
     @Autowired
     DetPrestamoRepository detPrestamoRepository;
+    @Autowired
+    MDevolucionRepository mDevolucionRepository;
+    @Autowired
+    UsuariosRepository usuariosRepository;
 
     @GetMapping(value = "all")
     public List<DetPrestamo> findAll(){
@@ -60,5 +66,42 @@ public class DetPrestamoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(detPrestamoDTOList);
+    }
+
+
+
+    @GetMapping("/{idmprestamo}")
+    public List<EjemplarPrestamoById_prestamoDTO> getEjemplaresByMprestamo(@PathVariable Long idmprestamo) {
+        return detPrestamoRepository.findEjemplaresByMprestamo(idmprestamo);
+    }
+
+    @PutMapping("/updateEstado/{idMprestamo}/{idEjemplar}/{idmdevolucion}/{idusuario}")
+    public ResponseEntity<Void> actualizarEstado(@PathVariable Long idMprestamo,
+                                                   @PathVariable Long idEjemplar,
+                                                 @PathVariable Long idmdevolucion,
+                                                 @PathVariable Long idusuario
+    ) {
+        try {
+            LocalDateTime fechaHoraActual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+            String fechaFormateada = fechaHoraActual.format(formatter);
+
+            Optional<Usuarios> usuario = usuariosRepository.findById(idusuario);
+            Optional<MDevolucion> mDevolucion = mDevolucionRepository.findById(idmdevolucion);
+
+            if(mDevolucion.isPresent() && usuario.isPresent()){
+                MDevolucion md = mDevolucion.get();
+                Usuarios us = usuario.get();
+                md.setFecha(fechaFormateada);
+                md.setEstado(0L);
+                md.setReserva(us);
+            }
+
+            // Lógica para actualizar estado
+            detPrestamoRepository.actualizarEstado(idMprestamo, idEjemplar);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -20,5 +20,4 @@ public class MDevolucionController {
     public List<MDevolucion> findAll(){
         return mDevolucionRepository.findAll();
     }
-
 }

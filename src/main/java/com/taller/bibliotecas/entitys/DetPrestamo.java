@@ -25,4 +25,9 @@ public class DetPrestamo {
     @MapsId("id_mprestamo")
     @JoinColumn(name = "id_mprestamo")
     MPrestamo mprestamo;
+
+    // Getter para acceder a estado desde la clave compuesta
+    public Long getEstado() {
+        return id_detPrestamoPK.getEstado();
+    }
 }

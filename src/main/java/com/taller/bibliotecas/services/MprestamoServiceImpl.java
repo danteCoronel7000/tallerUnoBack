@@ -8,6 +8,10 @@ import com.taller.bibliotecas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class MprestamoServiceImpl implements MPrestamoService{
     @Autowired
@@ -25,6 +29,10 @@ public class MprestamoServiceImpl implements MPrestamoService{
     @Autowired
     private EjemplaresRepository ejemplaresRepository;
 
+    @Autowired
+    private  MDevolucionRepository mDevolucionRepository;
+
+
     @Override
     public MPrestamo createPrestamo(CrearPrestamoDTO prestamoDTO) {
         // 1. Obtener el "Datos" y "Usuarios" usando sus respectivos IDs
@@ -34,17 +42,17 @@ public class MprestamoServiceImpl implements MPrestamoService{
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // 2. Crear la entidad "MPrestamo"
-        MPrestamo prestamo = new MPrestamo();
-        prestamo.setFecha(prestamoDTO.getFecha());
-        prestamo.setFechaini(prestamoDTO.getFechaini());
-        prestamo.setFechafin(prestamoDTO.getFechafin());
-        prestamo.setTipopres(prestamoDTO.getTipopres());
-        prestamo.setEstado(prestamoDTO.getEstado());
-        prestamo.setRealiza(datos);
-        prestamo.setPresta(usuario);
+        MPrestamo mprestamo = new MPrestamo();
+        mprestamo.setFecha(prestamoDTO.getFecha());
+        mprestamo.setFechaini(prestamoDTO.getFechaini());
+        mprestamo.setFechafin(prestamoDTO.getFechafin());
+        mprestamo.setTipopres(prestamoDTO.getTipopres());
+        mprestamo.setEstado(prestamoDTO.getEstado());
+        mprestamo.setRealiza(datos);
+        mprestamo.setPresta(usuario);
 
         // 3. Guardar el "MPrestamo"
-        MPrestamo savedPrestamo = mPrestamoRepository.save(prestamo);
+        MPrestamo savedPrestamo = mPrestamoRepository.save(mprestamo);
 
         // 4. Relacionar los ejemplares con el "MPrestamo"
         for (EjemplarDtoPPrestamos ejemplarDTO : prestamoDTO.getListEjemplares()) {
@@ -68,6 +76,21 @@ public class MprestamoServiceImpl implements MPrestamoService{
             detPrestamoRepository.save(detPrestamo);
         }
 
-        return savedPrestamo;
+
+        List<Ejemplares> ejemplaresList = new ArrayList<>();
+
+        MDevolucion mDevolucion = new MDevolucion();
+        mDevolucion.setEstado(1L);
+        mDevolucion.setMprestamo(mprestamo);
+        for (EjemplarDtoPPrestamos ejemplarDTO : prestamoDTO.getListEjemplares()) {
+            Ejemplares ejemplar = ejemplaresRepository.findById(ejemplarDTO.getId_ejemplar())
+                    .orElseThrow(() -> new RuntimeException("Ejemplar no encontrado"));
+            ejemplaresList.add(ejemplar);
+        }
+        mDevolucion.setEjemplaresList(ejemplaresList);
+        mDevolucionRepository.save(mDevolucion);
+
+
+            return savedPrestamo;
     }
 }
