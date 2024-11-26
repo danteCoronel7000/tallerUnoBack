@@ -40,4 +40,14 @@ public interface DetPrestamoRepository extends JpaRepository<DetPrestamo, Long> 
             "AND dp.id_ejemplar = :idEjemplar", nativeQuery = true)
     void actualizarEstado(@Param("idMprestamo") Long idMprestamo,
                           @Param("idEjemplar") Long idEjemplar);
+
+    //metodo anular devolucion actualiza el valor estado de la entidad dprestamo
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE detprestamo dp " +
+            "SET estado = 1 " +
+            "WHERE dp.id_mprestamo = :idMprestamo " +
+            "AND dp.id_ejemplar = :idEjemplar", nativeQuery = true)
+    void actualizarEstadoAdev(@Param("idMprestamo") Long idMprestamo,
+                          @Param("idEjemplar") Long idEjemplar);
 }
