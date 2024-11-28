@@ -34,4 +34,13 @@ public class MPrestamoController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/idpersona/{idPersona}")
+    public ResponseEntity<List<MPrestamo>> getPrestamosByPersonaId(@PathVariable Long idPersona) {
+        List<MPrestamo> prestamos = mPrestamoService.getPrestamosByIdPersona(idPersona);
+        if (prestamos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(prestamos);
+    }
 }

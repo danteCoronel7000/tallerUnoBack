@@ -53,12 +53,14 @@ public class BibliotecasApplication {
 				@Override
 				public void addCorsMappings(CorsRegistry registry) {
 					registry.addMapping("/**")
-							.allowedOrigins("http://localhost:4200") // Permite el acceso desde tu app Angular
+							.allowedOrigins("http://localhost:4200", "http://localhost:8100", "http://192.168.0.16:8100", "capacitor://localhost")
 							.allowedMethods("GET", "POST", "PUT", "DELETE")
-							.allowedHeaders("*");
+							.allowedHeaders("*")
+							.allowCredentials(true); // Permite enviar cookies o cabeceras de autenticación
 				}
 			};
 		}
+
 	}
 }
 //areas, editoriales, tipos,autores

@@ -93,4 +93,9 @@ public class MprestamoServiceImpl implements MPrestamoService{
 
             return savedPrestamo;
     }
+
+    @Override
+    public List<MPrestamo> getPrestamosByIdPersona(Long id_persona) {
+        return mPrestamoRepository.findByPersonaId(id_persona);
+    }
 }
