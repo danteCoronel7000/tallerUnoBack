@@ -1,6 +1,8 @@
 package com.taller.bibliotecas;
 
 import com.taller.bibliotecas.config.JWTAuthorizationFilter;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,8 +14,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.io.IOException;
 
 @SpringBootApplication
 public class BibliotecasApplication {
@@ -46,20 +51,26 @@ public class BibliotecasApplication {
 			return http.build();
 		}
 
-		// Agrega esta configuración de CORS
+
 		@Bean
 		public WebMvcConfigurer corsConfigurer() {
 			return new WebMvcConfigurer() {
 				@Override
 				public void addCorsMappings(CorsRegistry registry) {
 					registry.addMapping("/**")
-							.allowedOrigins("http://localhost:4200", "http://localhost:8100", "http://192.168.0.16:8100", "capacitor://localhost")
-							.allowedMethods("GET", "POST", "PUT", "DELETE")
-							.allowedHeaders("*")
+							.allowedOrigins(
+									"http://localhost:4200",      // Para desarrollo en Angular
+									"http://localhost:8100",      // Para desarrollo en Ionic
+									"capacitor://localhost",      // Para aplicaciones con Capacitor
+									"http://192.168.0.16:8100"    // Desde un dispositivo físico o emulador
+							)
+							.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Solo una línea para métodos permitidos
+							.allowedHeaders("Authorization", "Content-Type", "X-Requested-With")
 							.allowCredentials(true); // Permite enviar cookies o cabeceras de autenticación
 				}
 			};
 		}
+
 
 	}
 }
