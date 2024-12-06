@@ -57,15 +57,16 @@ public class BibliotecasApplication {
 			return new WebMvcConfigurer() {
 				@Override
 				public void addCorsMappings(CorsRegistry registry) {
-					registry.addMapping("/**")
+					registry.addMapping("/api/**")
 							.allowedOrigins(
 									"http://localhost:4200",      // Para desarrollo en Angular
 									"http://localhost:8100",      // Para desarrollo en Ionic
 									"capacitor://localhost",      // Para aplicaciones con Capacitor
-									"http://192.168.0.16:8100"    // Desde un dispositivo físico o emulador
+									"http://192.168.0.16:8100",
+									"http://localhost"
 							)
 							.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Solo una línea para métodos permitidos
-							.allowedHeaders("Authorization", "Content-Type", "X-Requested-With")
+							.allowedHeaders("*")
 							.allowCredentials(true); // Permite enviar cookies o cabeceras de autenticación
 				}
 			};

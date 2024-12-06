@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ModificarIdEjemplarDTO {
-    private Long currentId;
-    private Long newId;
+    private Long id_ejemplar;
+    private Long newcodinv;
 }

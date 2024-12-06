@@ -2,8 +2,10 @@ package com.taller.bibliotecas.controller;
 
 import com.taller.bibliotecas.entitys.*;
 import com.taller.bibliotecas.projections.classBased.*;
+import com.taller.bibliotecas.repository.AutoresRepository;
 import com.taller.bibliotecas.repository.EjemplaresRepository;
 import com.taller.bibliotecas.repository.TextosRepository;
+import com.taller.bibliotecas.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ public class EjemplaresController {
     EjemplaresRepository ejemplaresRepository;
     @Autowired
     TextosRepository textosRepository;
+    @Autowired
+    UsuariosRepository usuariosRepository;
 
     @GetMapping(value = "all")
     public List<Ejemplares> findAll(){
@@ -46,12 +50,21 @@ public class EjemplaresController {
     public ResponseEntity<Ejemplares> createEjemplar(@RequestBody CrearEjemplarDTO dto) {
         Ejemplares ejemplar = dto.getEjemplar();
         Long id_texto = dto.getId_texto();
+        Long id_usuario = dto.getId_usuario();
+
+        // Verificar si el codinv ya existe
+        boolean codinvExiste = ejemplaresRepository.existsByCodinv(dto.getCodinv());
+        if (codinvExiste) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
 
         // Buscar el texto relacionado por su ID
         Optional<Textos> textoOptional = textosRepository.findById(id_texto);
-        if (textoOptional.isPresent()) {
+        Optional<Usuarios> usuarioOptional = usuariosRepository.findById(id_usuario);
+        if (textoOptional.isPresent() && usuarioOptional.isPresent()) {
             // Asignar el texto al ejemplar
             ejemplar.setTexto(textoOptional.get());
+            ejemplar.setRegistra(usuarioOptional.get());
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 si el texto no existe
         }
@@ -132,12 +145,18 @@ public class EjemplaresController {
     public ResponseEntity<Ejemplares> modificarIdEjemplar(@RequestBody ModificarIdEjemplarDTO dto) {
 
             // Buscar el ejemplar por su ID actual
-            Optional<Ejemplares> ejemplarOptional = ejemplaresRepository.findById(dto.getCurrentId());
-System.out.println(ejemplarOptional);
+            Optional<Ejemplares> ejemplarOptional = ejemplaresRepository.findById(dto.getId_ejemplar());
+
+        // Verificar si el codinv ya existe
+        boolean codinvExiste = ejemplaresRepository.existsByCodinv(dto.getNewcodinv());
+        if (codinvExiste) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+
             if (ejemplarOptional.isPresent()) {
                 // Obtener la instancia del ejemplar y actualizar su ID
                 Ejemplares ejemplar = ejemplarOptional.get();
-                ejemplar.setCodinv(dto.getNewId());
+                ejemplar.setCodinv(dto.getNewcodinv());
 
                 // Guardar los cambios
                 ejemplaresRepository.save(ejemplar);
