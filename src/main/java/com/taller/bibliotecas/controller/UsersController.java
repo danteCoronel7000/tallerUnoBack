@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taller.bibliotecas.entitys.Personas;
 import com.taller.bibliotecas.entitys.Roles;
+import com.taller.bibliotecas.entitys.Textos;
 import com.taller.bibliotecas.entitys.Usuarios;
+import com.taller.bibliotecas.projections.classBased.RolesAsigNoAsig;
 import com.taller.bibliotecas.projections.classBased.UsuariosDTO;
 import com.taller.bibliotecas.projections.interfaceBased.closed.UsersClosedView;
 import com.taller.bibliotecas.projections.interfaceBased.closed.UsuariosAndPersonas;
@@ -129,9 +131,16 @@ public class UsersController {
         }
     }
 
+//filtro: si filtro llega 2 se devuelve toda la lista: si si llega 0  se devuelve los roles que no estan asignados a ese usuario
+    // si llega uno se debuelve una lista con los roles que estan asignados a ese usuario del id que llega
+    @GetMapping(value = "/filtrarRoles/{id}/{filtro}")
+    public List<RolesAsigNoAsig> usuariosPorId(@PathVariable Long id, @PathVariable Long filtro){
+        return usersService.findById_usuario(id, filtro);
+    }
+
     @GetMapping(value = "/obternerPorId/{id}")
-    public Optional<Usuarios> usuariosPorId(@PathVariable Long id){
-        return usersService.findById_usuario(id);
+    public Optional<Usuarios> usuarioPorId(@PathVariable Long id) {
+        return usuariosRepository.findById(id);
     }
 
 

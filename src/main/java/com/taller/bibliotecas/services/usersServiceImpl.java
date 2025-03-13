@@ -1,14 +1,19 @@
 package com.taller.bibliotecas.services;
 
 import com.taller.bibliotecas.entitys.Personas;
+import com.taller.bibliotecas.entitys.Roles;
 import com.taller.bibliotecas.entitys.Usuarios;
+import com.taller.bibliotecas.projections.classBased.RolesAsigNoAsig;
 import com.taller.bibliotecas.projections.classBased.UsuariosDTO;
 import com.taller.bibliotecas.projections.interfaceBased.closed.UsersClosedView;
 import com.taller.bibliotecas.projections.interfaceBased.closed.UsuariosAndPersonas;
+import com.taller.bibliotecas.repository.RolesRepository;
 import com.taller.bibliotecas.repository.UsuariosRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -19,11 +24,12 @@ public class usersServiceImpl implements UsersService{
     private final UsuariosRepository usuariosRepository;
     private final PersonasService personasService;
     private final PasswordEncoder passwordEncoder;
+    private final RolesRepository rolesRepository;
 
-    public usersServiceImpl(UsuariosRepository usuariosRepository, PersonasService personasService, PasswordEncoder passwordEncoder) {
+    public usersServiceImpl(RolesRepository rolesRepository, UsuariosRepository usuariosRepository, PersonasService personasService, PasswordEncoder passwordEncoder) {
         this.usuariosRepository = usuariosRepository;
         this.personasService =personasService;
-
+        this.rolesRepository = rolesRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -84,8 +90,53 @@ public class usersServiceImpl implements UsersService{
     }
 
     @Override
-    public Optional<Usuarios> findById_usuario(Long id_usuario) {
-        return usuariosRepository.findById(id_usuario);
+    public List<RolesAsigNoAsig> findById_usuario(Long id_usuario, Long filtro) {
+        // Verificar si el filtro es null o no tiene un valor válido (0, 1, 2)
+        if (filtro == null || (filtro != 0 && filtro != 1 && filtro != 2)) {
+            return new ArrayList<>(); // Devuelve una lista vacía
+        }
+
+        // Obtener el usuario por su id_usuario utilizando el repositorio
+        Optional<Usuarios> usuarioOptional = usuariosRepository.findById(id_usuario);
+
+        // Lista que se devolverá según los parámetros que lleguen
+        List<RolesAsigNoAsig> rolesAsigNoAsigList = new ArrayList<>();
+
+        // Verificar si el usuario existe
+        if (usuarioOptional.isPresent()) {
+            Usuarios usuario = usuarioOptional.get();
+
+            // Obtener todos los roles
+            List<Roles> todosLosRoles = rolesRepository.findAll();
+
+            // Procesar cada rol para determinar su asignación
+            for (Roles rol : todosLosRoles) {
+                RolesAsigNoAsig rolDto = new RolesAsigNoAsig();
+                rolDto.setId_rol(rol.getId_rol());
+                rolDto.setNombre(rol.getNombre());
+                rolDto.setEstado(rol.getEstado());
+
+                // Verificar si el rol está asignado al usuario
+                boolean estaAsignado = usuario.getRolesList().stream()
+                        .anyMatch(r -> r.getId_rol().equals(rol.getId_rol()));
+
+                rolDto.setAsig(estaAsignado ? 1L : 0L); // 1 si está asignado, 0 si no
+
+                // Aplicar el filtro
+                if (filtro == 2) {
+                    // Si el filtro es 2, se devuelve toda la lista
+                    rolesAsigNoAsigList.add(rolDto);
+                } else if (filtro == 1 && estaAsignado) {
+                    // Si el filtro es 1, se devuelven solo los roles asignados al usuario
+                    rolesAsigNoAsigList.add(rolDto);
+                } else if (filtro == 0 && !estaAsignado) {
+                    // Si el filtro es 0, se devuelven solo los roles no asignados al usuario
+                    rolesAsigNoAsigList.add(rolDto);
+                }
+            }
+        }
+
+        return rolesAsigNoAsigList;
     }
 
 

@@ -44,13 +44,42 @@ public class BibliotecasApplication {
 					.addFilterAfter(new JWTAuthorizationFilter(secret), UsernamePasswordAuthenticationFilter.class)
 					.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 					.and().authorizeRequests()
+					// Permitir acceso a Swagger UI sin autenticación
+					.requestMatchers(
+							"/swagger-ui/**",       // Ruta de la interfaz de Swagger UI
+							"/v3/api-docs/**",      // Ruta del JSON de OpenAPI
+							"/swagger-resources/**", // Recursos de Swagger
+							"/swagger-ui.html",     // Ruta alternativa de Swagger UI
+							"/webjars/**"           // Recursos estáticos de Swagger
+					).permitAll()
+					// Permitir acceso a las rutas de la API sin autenticación
+					.requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+					.requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
+					// Todas las demás rutas requieren autenticación
+					.anyRequest().authenticated();
+
+			return http.build();
+		}
+/*
+		@Bean
+		public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+			http.cors().and().csrf().disable()
+					.headers(headers -> headers
+							.frameOptions().disable()  // Desactiva el X-Frame-Options para el control por Content-Security-Policy
+							.contentSecurityPolicy("frame-ancestors 'self' http://localhost:4200")  // Permite iframes solo desde localhost:4200
+					)
+					.addFilterAfter(new JWTAuthorizationFilter(secret), UsernamePasswordAuthenticationFilter.class)
+					.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+					.and().authorizeRequests()
 					.requestMatchers(HttpMethod.POST, "/api/**").permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 					.requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
 					.anyRequest().authenticated();
 			return http.build();
 		}
-
+*/
 
 		@Bean
 		public WebMvcConfigurer corsConfigurer() {
